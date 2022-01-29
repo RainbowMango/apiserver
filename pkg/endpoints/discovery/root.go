@@ -103,6 +103,7 @@ func (s *rootAPIsHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request)
 	defer s.lock.RUnlock()
 
 	klog.Infof("[JUSTFORDEBUG] Requesting Group")
+	panic("JUSTFORDEBUG")
 
 	orderedGroups := []metav1.APIGroup{}
 	for _, groupName := range s.apiGroupNames {
