@@ -21,11 +21,13 @@ import (
 	"sync"
 
 	restful "github.com/emicklei/go-restful"
+	"k8s.io/klog/v2"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilnet "k8s.io/apimachinery/pkg/util/net"
+
 	"k8s.io/apiserver/pkg/endpoints/handlers/negotiation"
 	"k8s.io/apiserver/pkg/endpoints/handlers/responsewriters"
 )
@@ -73,6 +75,7 @@ func (s *rootAPIsHandler) AddGroup(apiGroup metav1.APIGroup) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
+	klog.Infof("[JUSTFORDEBUG] Adding Group: %s", apiGroup.Name)
 	_, alreadyExists := s.apiGroups[apiGroup.Name]
 
 	s.apiGroups[apiGroup.Name] = apiGroup
@@ -85,6 +88,7 @@ func (s *rootAPIsHandler) RemoveGroup(groupName string) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
+	klog.Infof("[JUSTFORDEBUG] Removing Group: %s", groupName)
 	delete(s.apiGroups, groupName)
 	for i := range s.apiGroupNames {
 		if s.apiGroupNames[i] == groupName {
@@ -97,6 +101,8 @@ func (s *rootAPIsHandler) RemoveGroup(groupName string) {
 func (s *rootAPIsHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
+
+	klog.Infof("[JUSTFORDEBUG] Requesting Group")
 
 	orderedGroups := []metav1.APIGroup{}
 	for _, groupName := range s.apiGroupNames {
